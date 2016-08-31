@@ -1,0 +1,76 @@
+﻿@{	
+    Page.Title = "Home";
+
+    if(!SessionVars.isAuthenticated)
+    {
+        Server.TransferRequest("~/Default.cshtml");
+    }
+
+    string filePath = Server.MapPath("~/Access.csv");
+    string pathbase = "~/ListBackup ";
+    string pathExt = ".csv";
+    string replace = "";
+    string pattern = "[/:]*";
+
+    var csvData = CsvParser.getCsvContent(filePath);
+    var records = CsvParser.getRecords(csvData);  
+           
+    FsLogger.Append2Log("\r\n"+SessionVars.url+"..."+SessionVars.user+"..."+SessionVars.isAuthenticated+"...Default GET..."+DateTime.Now.ToString());
+
+    if(IsPost && SessionVars.isAuthenticated)
+    {   
+        FsLogger.Append2Log("\r\n"+SessionVars.url+"...POST..."+SessionVars.user+"_"+SessionVars.isAuthenticated+"..."+DateTime.Now.ToString());
+
+        string pathDate = RegexUtil.MatchNdReplace(DateTime.Now.ToString(), pattern, replace);               
+        string backPath = pathbase+pathDate+pathExt;
+                   
+        using(FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite))
+        {                      
+            using(FileStream bfs = new FileStream(Server.MapPath(backPath), FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            {                         
+                fs.CopyTo(bfs);
+                fs.Dispose();
+                bfs.Dispose();
+            }                                   
+        }
+
+        using(FileStream fs = new FileStream(filePath, FileMode.Truncate))
+        {
+            
+            fs.Dispose();
+        }
+    }
+}     
+    
+<h1>Employees with access to the Piston Ringer Assembly</h1>
+
+<div id="empwrap">
+    <ul id="emplist" data-role="listview" data-inset="false" data-theme="b">
+        @for (int r = 0; r < records.Length-1; r++)
+        {
+            var e = new EmployeeRecord();
+            var f = CsvParser.getFields(records[r]);
+            e.Name = f[0];
+            e.Badge = f[1];
+            e.Access = f[2];
+            <li class="employee">
+                <div data-role="collapsible" data-inset="false">
+                    <h3>@e.Name</h3>
+                    <h4>@e.Badge</h4>
+                    <h4>@e.Access</h4>
+                </div>
+            </li>
+        }
+    </ul>
+    <form id="delall" method="post">
+        <input id="delbtn" name="delbtn" type="submit" value="Delete All"></input>
+    </form>    
+    <script type="text/javascript">
+        $('#delall').submit(function (event) {
+            var d = window.confirm("Do you really want to delete all ?...");
+            if (d == false) { event.preventDefault(); }
+            else { return; }
+        })
+    </script>
+</div>
+

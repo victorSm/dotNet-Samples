@@ -1,0 +1,39 @@
+﻿@{    
+
+    Page.Title= "Delete";
+    var Name="";
+	var message = "";
+
+    FsLogger.Append2Log("\r\n"+SessionVars.url+"...GET..."+SessionVars.user+"_"+SessionVars.isAuthenticated+"..."+DateTime.Now.ToString());
+
+    if(!SessionVars.isAuthenticated)
+    {
+        Server.TransferRequest("~/Default.cshtml");
+    }
+
+    Validation.RequireField("name", "A name is required...");
+    Validation.Add("name", Validator.StringLength(15));
+
+    if(IsPost)
+    {
+        FsLogger.Append2Log("\r\n"+SessionVars.url+"Delete...POST..."+SessionVars.user+"_"+SessionVars.isAuthenticated+"..."+DateTime.Now.ToString());
+        Name = Request.Form["name"];        
+		CsvParser.deleteItem(Name, Server.MapPath("~/Access.csv"));
+		Response.Redirect("~/Delete.cshtml");
+    }
+}
+
+<div id="del">
+    <form id="delform" method="post">
+        @Html.ValidationSummary()
+        <h2>Enter the employee's name to be deleted from the list</h2>
+        <div class="fieldcontainer" data-role="fieldcontain">
+            <label for="name">Name</label>
+                <input id="name" name="name" type="text" value=@Request.Form["name"]></input>
+        </div>
+        <div class="fieldcontainer" data-role="fielcontain">
+            <label for="delbtn">Delete</label>
+                <input id="delbtn" name="delbtn" type="submit" value="Delete Item"></input>
+        </div>
+    </form>
+</div>

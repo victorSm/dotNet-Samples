@@ -1,0 +1,63 @@
+﻿@{
+
+    Page.Title= "Add";
+
+    var rName = "";
+    var rBadge = "";
+	var rAccess = "";
+    var message = ""; 
+
+	FsLogger.Append2Log("\r\n"+SessionVars.url+"...GET..."+SessionVars.user+"_"+SessionVars.isAuthenticated+"..."+DateTime.Now.ToString());
+
+    if(!SessionVars.isAuthenticated)
+    {
+        Server.TransferRequest("~/Default.cshtml");
+    }
+     
+    Validation.RequireField("name", "A name is required...");
+    Validation.RequireField("badge", "A badge number is required...");
+    Validation.Add("name", Validator.StringLength(15));
+    Validation.Add("badge", Validator.Integer("badge number must be an integer..."));
+
+    if(IsPost && Validation.IsValid())
+    {
+        rName = Request.Form["name"];
+        rBadge = Request.Form["badge"];
+        rAccess = Request.Form["access"];
+
+        FsLogger.Append2Log("\r\n"+SessionVars.url+"Add...POST..."+SessionVars.user+"_"+SessionVars.isAuthenticated+"..."+DateTime.Now.ToString());
+
+        if(rName.Equals("") || rBadge.Equals("")){}
+        else
+        {
+            CsvParser.addRecord(rName, rBadge, rAccess, Server.MapPath("~/Access.csv"));
+			Response.Redirect("~/Add.cshtml");
+        }
+    }
+}
+
+<div id="add" data-theme="b">
+    <h2>Enter the employee's information to insert into the database</h2>
+    <form id="addform" method="post">
+        @Html.ValidationSummary()
+        <div class="fieldcontainer" data-role="fieldcontain">
+            <label for="name">Name</label>
+                <input id="name" name="name" type="text" value=@Request.Form["name"]></input>
+            <label for="name">Badge</label>
+                <input id="badge" name="badge" type="text" value=@Request.Form["badge"]></input>
+            <label for="access" class="select">Access Level</label>
+            <select name="access" id="access">         
+                <option value="Admin">Admin</option>
+                <option value="Controls">Controls</option>
+                <option value="Engineer">Engineer</option>
+                <option value="Quality">Quality</option>
+                <option value="Operator">Operator</option>
+            </select>
+         </div>
+                 
+        <div class="fielcontainer" data-role="fielcontain">
+        <label for="addbtn">Add</label>
+            <input id="addbtn" name="addbtn" type="submit" value="Add Item"></input>
+        </div>
+    </form>
+</div>

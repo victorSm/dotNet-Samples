@@ -1,0 +1,64 @@
+﻿@{
+    
+    Page.Title = "Login";
+
+    var message = "";
+    var user = "";
+    var pass = "";
+
+    FsLogger.Append2Log("\r\n"+SessionVars.url+"..."+SessionVars.user+"...Default GET..."+DateTime.Now.ToString());
+
+    Validation.RequireField("username", "A user name is required...");
+    Validation.Add("username", Validator.StringLength(10));
+    Validation.Add("password", Validator.StringLength(15));
+	
+	SessionVars.isAuthenticated = false;
+	SessionVars.user = "";
+
+    if(IsPost && Validation.IsValid())
+    {
+        	
+        user = Request.Form[0];
+        pass = Request.Form[1];
+        SessionVars.user = Request.Form[0];
+        SessionVars.url = Request.RawUrl;
+        AD_Auth ldap = new AD_Auth("HZWMWDCP05.mw.na.cat.com");
+
+        FsLogger.Append2Log("\r\n"+SessionVars.url+"...Login Postback..."+user+"..."+DateTime.Now.ToString());
+
+        if(ldap.authenticate(user, pass))
+        {
+            FsLogger.Append2Log("\r\n"+SessionVars.url+"..."+SessionVars.user+"_"+SessionVars.isAuthenticated+"...AUTH..."+DateTime.Now.ToString());
+            SessionVars.isAuthenticated = true;  
+          //SessionVars.acctProps = ldap.getAcctProps(user,pass);
+          //SessionVars.ldapObjPropNames = ldap.getAttribs();       
+            Response.Redirect("~/Home.cshtml");
+        }
+        else
+        {
+            FsLogger.Append2Log("\r\n"+SessionVars.url+"..."+SessionVars.user+"_"+SessionVars.isAuthenticated+"...NO_AUTH..."+DateTime.Now.ToString());
+            SessionVars.isAuthenticated = false;
+        }
+    }
+}
+
+<div id="login">
+  <form id="submitform" method="post">
+    @Html.ValidationSummary()    
+    <div class="fieldcontainer" data-role="fieldcontain" id="loginblock" style="width:40em; margin-left:30%; margin-top:10%">
+        <div class="ui-field-contain" id="userdiv">
+            <label for="username">User Name</label>
+            <input type="text" name="username" id="username" value=@Request.Form["username"]></input>                    
+        </div>
+        <div class="ui-field-contain" id="psswdiv">
+            <label for="password">Password</label>
+            <input type="password" name="passsword" id="password" value=@Request.Form["password"]></input>
+        </div>
+    </div>       
+    <div class="ui-input-btn" id="submitdiv" style="width:40em; margin-left:30%; margin-bottom:10%">
+        <label for="loginbtn">Login</label>
+            <input id="loginbtn" name="loginbtn" type="submit" value="Login"></input>
+    </div>
+  </form>
+</div>
+

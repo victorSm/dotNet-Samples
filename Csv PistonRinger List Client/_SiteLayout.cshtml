@@ -1,0 +1,53 @@
+﻿@{
+    
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>PistonRinger-@Page.Title</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+        <link rel="stylesheet" href="~/Content/catTheme.min.css" />
+        <link rel="stylesheet" href="~/Content/jquery.mobile.icons.min.css" />
+
+        <link rel="stylesheet" href="~/Content/jqm-1.4.5/jquery.mobile.structure-1.4.5.min.css" />
+
+        <script type="text/javascript" src="~/Scripts/jquery-1.11.3.min.js"></script>
+        <script>
+            $(document).on("mobileinit", function()
+            {
+                $.mobile.hashListeningEnabled = false;
+	            $.mobile.pushStateEnabled = false;
+            })
+        </script>
+        <script type="text/javascript" src="~/Scripts/jquery.mobile-1.4.5.min.js"></script>
+
+        <script type="text/javascript" src="~/Scripts/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+        @RenderSection("Scripts", required: false)
+    </head>
+    <body>
+        <div id="page">
+            <div>
+                <h1><a style="text-decoration:none;"class="navbar-brand" href="~/Home.cshtml">Piston Ringer Access Manager</a></h1>
+            </div>
+            <div data-role="footer" class="ui-bar">
+                <a href="~/Home.cshtml">Home</a>
+                <a href="~/Add.cshtml">Add Entry</a>
+                <a href="~/Delete.cshtml">Delete Entry</a>
+                <a href="~/Logout.cshtml">Logout</a>
+             </div>
+            <div id="body">
+                @RenderBody()
+            </div>
+            <footer id="footer">
+                @DateTime.Now - Piston Ringer Employee List.
+            </footer>
+        </div>
+    </body>
+</html>
